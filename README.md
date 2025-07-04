@@ -14,7 +14,9 @@ A dataset of 1,000 randomized credit card transactions was created using Python 
 
 ## SQL Schema & Data Import ##
 - A schema named *fraud_detection* was created in MySQL workbench.
+  
         USE fraud_detection;
+  
 - The CSV file was imported using the Table Data Import Wizard.
 Two additional columns were added to the *transactions* table:
 - IsFraud (BOOLEAN): based on the following rules before
@@ -22,19 +24,23 @@ Two additional columns were added to the *transactions* table:
 
 ## Fraud Detection Rules ##
 The following rules were applied to flag transactions as fraud:
+
 1. Hihgh-Value Transactions (>$10,000)
+
         UPDATE transactions
         SET IsFraud = 1,
         	FraudReason = "Over $10,000"
         WHERE amount > 10000.00;
 
 3. Suspicious Time Window (Between 2 AM - 5 AM)
+   
         UPDATE transactions
         SET IsFraud = 1,
         	FraudReason = "Between 2 and 5 AM"
         WHERE HOUR(date) between 2 and 4;
 
-4. Geographic Anomalies (More than 6 unique locations per user)
+5. Geographic Anomalies (More than 6 unique locations per user)
+   
         UPDATE transactions
         SET IsFraud = 1,
         	FraudReason = "Multiple Locations"
@@ -48,7 +54,8 @@ The following rules were applied to flag transactions as fraud:
         	) AS temp
         );
 
-5. Transaction Velocity (>= 5 transactions per hour)
+7. Transaction Velocity (>= 5 transactions per hour)
+   
           UPDATE transactions
           SET IsFraud = 1,
           	FraudReason = "5+ Transactions/Hour"
@@ -63,14 +70,34 @@ The following rules were applied to flag transactions as fraud:
           );
 
 To view final dataset:
+
           SELECT * FROM transactions;
 
-## Power BI Visualization ##
+## Power BI Analysis ##
 PowerBI was used to visualize and derive insights from the processed data:
 - Donut Chart: Percentage of fraudulent vs. legitimate transactions, segmented by fraud reason
 - Top 10 Locations Bar Chart: Displays the 10 U.S. cities with the most fraud, broken down by merchant category
 - Total Fraud Cases by Reason Bar Chart: Number of fraudulent cases per rule
 - Line Chart: Timeline of fradulent spending by fraud reason to detect patterns over time
 
+**High-Value Fraud**
+- Transactions over $10,000
+
+**Time-Based Fraud**
+- A notable amount of fraudulent transactions occurred between the hours of 2 AM and 5 AM with a total of 11%. This showed a high potenial card misue during off-hours.
+
+**Geographic Anomalies**
+- users with transactions from more than six unique U.S. cities were flagged, highlighting potential compromised accounts or travel-related fraud.
+
+**Rapid Transaction Frequency**
+- Many users flagged under the 5+ transactions/hour rule showed possible bot or automated fraud behavior.
+
+## Files Included ##
+transaction_dataset_creation.py - Python script to create transaction_dataset.csv
+transaction_dataset.csv - Simulated credit card transaction dataset from the Python script
+transactions_updated.csv - updated transaction dataset with the fraud labels and reasons
+fraud_dashboard: PowerBI dashboard
+fraud_dashboard.pdf - PowerBI dashboard as a PDF
+
 ## Conclusion ##
-The most fraudulent transactions occurred between the hours of 2 AM and 5 AM with a total of 11%. 
+This project demonstrates how rule-based SQL detection and interactive dashboarding in Power BI can be used to identify and interpret suspicious activity in financial data. It serves as a foundation for future enhancements using machine learning, anomaly detection, or real-time fraud monitoring systems.'
